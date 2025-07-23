@@ -1,0 +1,320 @@
+# API Documentation - Panel TGDM
+
+## 📖 Descripción General
+
+API RESTful para el sistema de gestión de torneos y mesas de juego Panel TGDM.
+
+**Base URL:** `http://localhost:8080/api`
+
+## 🔐 Autenticación
+
+El sistema utiliza autenticación basada en cookies. Todas las rutas (excepto login) requieren autenticación.
+
+### Login
+```http
+GET /api/users/userlogin?name={username}&password={hashedPassword}
+```
+
+**Parámetros:**
+- `name`: Nombre de usuario (string)
+- `password`: Contraseña hasheada con MD5 (string)
+
+**Respuesta exitosa:**
+```json
+[
+  {
+    "_id": "user_id",
+    "name": "username",
+    "email": "user@example.com",
+    "rol": "admin|representante|agente",
+    "grupo": ["grupo_id"]
+  }
+]
+```
+
+## 👥 Usuarios
+
+### Listar usuarios
+```http
+GET /api/users
+```
+
+### Obtener usuario por ID
+```http
+GET /api/users/:id
+```
+
+### Crear usuario
+```http
+POST /api/users
+```
+
+**Body:**
+```json
+{
+  "name": "string",
+  "password": "string",
+  "email": "string",
+  "telefono": "number",
+  "rol": "admin|representante|agente",
+  "grupo": ["grupo_id"]
+}
+```
+
+### Actualizar usuario
+```http
+PUT /api/users/:id
+```
+
+### Eliminar usuario
+```http
+DELETE /api/users/:id
+```
+
+## 🏢 Grupos
+
+### Listar grupos
+```http
+GET /api/grupos
+```
+
+### Obtener grupo por ID
+```http
+GET /api/grupos/:id
+```
+
+### Crear grupo
+```http
+POST /api/grupos
+```
+
+**Body:**
+```json
+{
+  "nombre": "string",
+  "representante": ["user_id"],
+  "admins": ["user_id"]
+}
+```
+
+### Actualizar grupo
+```http
+PUT /api/grupos/:id
+```
+
+### Eliminar grupo
+```http
+DELETE /api/grupos/:id
+```
+
+## 🎮 Jugadores
+
+### Listar jugadores
+```http
+GET /api/jugadores
+```
+
+### Obtener jugador por ID
+```http
+GET /api/jugadores/:id
+```
+
+### Crear jugador
+```http
+POST /api/jugadores
+```
+
+**Body:**
+```json
+{
+  "id": "number",
+  "nombre": "string",
+  "usuario": "string",
+  "password": "string",
+  "telefono": "number",
+  "grupo": ["grupo_id"]
+}
+```
+
+### Actualizar jugador
+```http
+PUT /api/jugadores/:id
+```
+
+### Agregar carga al jugador
+```http
+POST /api/jugadores/:id/carga
+```
+
+**Body:**
+```json
+{
+  "monto": "number",
+  "descripcion": "string"
+}
+```
+
+### Agregar retiro al jugador
+```http
+POST /api/jugadores/:id/retiro
+```
+
+**Body:**
+```json
+{
+  "monto": "number",
+  "descripcion": "string"
+}
+```
+
+## 🏆 Eventos
+
+### Listar eventos
+```http
+GET /api/eventos
+```
+
+### Obtener evento por ID
+```http
+GET /api/eventos/:id
+```
+
+### Crear evento
+```http
+POST /api/eventos
+```
+
+**Body:**
+```json
+{
+  "nombre": "string",
+  "categoria": "mam|tor|camp",
+  "color": "string",
+  "jugadores": "number",
+  "entrada": "number",
+  "premio": "number",
+  "puntos": "number",
+  "comicion": "number",
+  "descripcion": "string",
+  "grupo": ["grupo_id"]
+}
+```
+
+### Actualizar evento
+```http
+PUT /api/eventos/:id
+```
+
+### Eliminar evento
+```http
+DELETE /api/eventos/:id
+```
+
+## 🎯 Mesas
+
+### Listar mesas
+```http
+GET /api/mesas
+```
+
+### Obtener mesa por ID
+```http
+GET /api/mesas/:id
+```
+
+### Crear mesa
+```http
+POST /api/mesas
+```
+
+**Body:**
+```json
+{
+  "grupo": "grupo_id",
+  "evento": "evento_id",
+  "jugadores": ["jugador_id"],
+  "creador": "user_id"
+}
+```
+
+### Finalizar mesa
+```http
+PUT /api/mesas/:id/finalizar
+```
+
+**Body:**
+```json
+{
+  "ganador": "jugador_id"
+}
+```
+
+### Listar mesas activas
+```http
+GET /api/mesas/activas
+```
+
+### Listar mesas finalizadas
+```http
+GET /api/mesas/finalizadas
+```
+
+### Filtrar mesas
+```http
+GET /api/mesas/filtrar?grupo={grupo_id}&evento={evento_id}&fecha={fecha}
+```
+
+## 📊 Estadísticas y Balance
+
+### Balance general
+```http
+GET /api/balance
+```
+
+### Estadísticas por grupo
+```http
+GET /api/estadisticas/grupo/:id
+```
+
+### Estadísticas por jugador
+```http
+GET /api/estadisticas/jugador/:id
+```
+
+## 🚨 Códigos de Estado HTTP
+
+- `200` - OK
+- `201` - Creado
+- `400` - Solicitud incorrecta
+- `401` - No autorizado
+- `403` - Prohibido
+- `404` - No encontrado
+- `500` - Error interno del servidor
+
+## 🔧 Configuración de CORS
+
+El servidor está configurado para aceptar solicitudes desde:
+- `http://localhost:5173` (desarrollo)
+- Configurar URLs de producción según necesidad
+
+## 📝 Notas Importantes
+
+1. **Autenticación**: Todas las rutas requieren autenticación excepto `/api/users/userlogin`
+2. **Validación**: Los datos de entrada son validados en el servidor
+3. **Referencias**: Los modelos utilizan ObjectId de MongoDB para referencias
+4. **Fechas**: Las fechas se almacenan como strings con formato ISO
+5. **Seguridad**: Contraseñas hasheadas con MD5 (recomendado migrar a bcrypt)
+
+## 🛠️ Herramientas de Desarrollo
+
+### Postman Collection
+Disponible en: `docs/postman/Panel-TGDM.postman_collection.json`
+
+### Swagger/OpenAPI
+Documentación interactiva disponible en: `http://localhost:8080/api-docs` (próximamente)
+
+## 🔄 Versionado
+
+Versión actual: `v1.0.0`
+
+Para futuras versiones, se utilizará versionado semántico y se mantendrá compatibilidad hacia atrás cuando sea posible.
